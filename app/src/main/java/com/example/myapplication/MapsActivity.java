@@ -2,6 +2,8 @@ package com.example.myapplication;
 
 import androidx.fragment.app.FragmentActivity;
 
+import android.location.Location;
+import android.location.LocationRequest;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -29,7 +31,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private ActivityMapsBinding binding;
   //  Person[] persons;
 
-    Location[] locs;
+    Person[] locs;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,26 +46,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //WRITING TO FIREBASE
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("Locations");
-        double latitude = 75.85;
+        String identifier = "Aisha iPhone";
+        double latitude = 25;
         double longitude = 76.899;
-        double speed = 240;
-        Location x = new Location(latitude, longitude, speed, "Mena Huawei"); //subject to change as for RDB as key identifier is the PERSON name
-        //Person personX = new Person("Dina AlAshakr", 25, x);
-       // personX.setLoc(x);
-        myRef.child(String.valueOf(x.getID())).setValue(x);
+        double speed = 25;
+        double time = 22;
 
-        ArrayList<Location> countryList = new ArrayList<Location>();
+        Person x = new Person(identifier, latitude, longitude, speed, time); //subject to change as for RDB as key identifier is the PERSON name
+
+        myRef.child(String.valueOf(x.getIdentifier())).setValue(x);
+
+        ArrayList<Person> countryList = new ArrayList<Person>();
 
         // Read from the database ---------------------------
 
-        locs = new Location[2];
+        locs = new Person[5];
+
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                int i=0;
                for (DataSnapshot ds: dataSnapshot.getChildren())
                {
-                   locs[i++] = ds.getValue(Location.class);
+                   locs[i++] = ds.getValue(Person.class);
 
                    //Log.d("halo", String.valueOf(persons[i++].getName()));
                    /*
@@ -72,10 +77,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
-                Log.d("halo", String.valueOf(locs[0].getIdentifier()));
+                Log.d("halo", String.valueOf(locs[0].getTime()));
                 mMap.addMarker(new MarkerOptions().position(new LatLng(
                         locs[0].getLatitude(), locs[0].getLongitude()))).setTitle(
-                        locs[0].getIdentifier()+
+                        locs[0].getSpeed()+
                                 ": \nLongi="+locs[0].getLongitude()+
                                 "\nLatitude="+locs[0].getLatitude()+
                                 "\n Speed:"+ locs[0].getSpeed());
@@ -112,8 +117,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
-
-
             mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 
                 @Override
@@ -135,10 +138,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
        /* @Override
         public void onMapLongClick(LatLng latLng) {
-            Location NewLocationMarker = new Location("new");
-            NewLocationMarker.setLatitude(latLng.latitude);
-            NewLocationMarker.setLongitude(latLng.longitude);
-            MainActivity.locationList.add(NewLocationMarker);
+            Person NewPersonMarker = new Person("new");
+            NewPersonMarker.setLatitude(latLng.latitude);
+            NewPersonMarker.setLongitude(latLng.longitude);
+            MainActivity.PersonList.add(NewPersonMarker);
 
             mMap.addMarker(new MarkerOptions().position(latLng)).setTitle("Longi="+latLng.longitude + "\nLatitude="+latLng.latitude);
         }*/
