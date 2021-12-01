@@ -1,15 +1,24 @@
 package com.example.myapplication;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationRequest;
+//import android.location.LocationRequest;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -25,10 +34,23 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.FusedLocationProviderApi;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+import com.google.android.gms.location.LocationServices;
+
+
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
+        GoogleApiClient.ConnectionCallbacks, OnConnectionFailedListener, LocationListener, View.OnClickListener {
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
+    private GoogleApiClient googleApiClient;//to turn requests on and off
+    public static final int UPDATE_INTERVAL = 5000; // 5 secs
+    public static final int FASTEST_UPDATE_INTERVAL = 2000;
+    private LocationRequest locationRequest;
+
   //  Person[] persons;
 
     Person[] locs;
@@ -43,67 +65,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        //WRITING TO FIREBASE
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("Locations");
-        String identifier = "Aisha iPhone";
-        double latitude = 25;
-        double longitude = 76.899;
-        double speed = 25;
-        double time = 22;
 
-        Person x = new Person(identifier, latitude, longitude, speed, time); //subject to change as for RDB as key identifier is the PERSON name
+        //----------------start location services--
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
 
-        myRef.child(String.valueOf(x.getIdentifier())).setValue(x);
-
-        ArrayList<Person> countryList = new ArrayList<Person>();
-
-        // Read from the database ---------------------------
-
-        locs = new Person[5];
-
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-               int i=0;
-               for (DataSnapshot ds: dataSnapshot.getChildren())
-               {
-                   locs[i++] = ds.getValue(Person.class);
-
-                   //Log.d("halo", String.valueOf(persons[i++].getName()));
-                   /*
-*/
-               }
+        locationRequest = LocationRequest.create()
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setInterval(UPDATE_INTERVAL)
+                .setFastestInterval(FASTEST_UPDATE_INTERVAL);
 
 
 
-                Log.d("halo", String.valueOf(locs[0].getTime()));
-                mMap.addMarker(new MarkerOptions().position(new LatLng(
-                        locs[0].getLatitude(), locs[0].getLongitude()))).setTitle(
-                        locs[0].getSpeed()+
-                                ": \nLongi="+locs[0].getLongitude()+
-                                "\nLatitude="+locs[0].getLatitude()+
-                                "\n Speed:"+ locs[0].getSpeed());
+        //WRITING TO FIREBASE ------------
 
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(locs[0].getLatitude(), locs[0].getLongitude())));
-
-
-              //  WANTED TO LOOP AND GET ALL THE OBJECTS TO DISPLAY ON MAP.... keep getting NPE!!!!!!!!!
-                //  for (int j=0; j<locs.length; j++){
-
-                   //Log.d("halo", locs[j].getIdentifier());
-                   /*
-              */ //}
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w("halooo", "Failed to read value.", error.toException());
-
-            }
-        });
     }
 
         /* Add a marker in Sydney and move the camera
@@ -136,15 +114,92 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         }
 
-       /* @Override
-        public void onMapLongClick(LatLng latLng) {
-            Person NewPersonMarker = new Person("new");
-            NewPersonMarker.setLatitude(latLng.latitude);
-            NewPersonMarker.setLongitude(latLng.longitude);
-            MainActivity.PersonList.add(NewPersonMarker);
+    @Override
+    public void onClick(View view) {
 
-            mMap.addMarker(new MarkerOptions().position(latLng)).setTitle("Longi="+latLng.longitude + "\nLatitude="+latLng.latitude);
-        }*/
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        // Check Permissions Now
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},123);
+
+        try {
+            Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+            if (location != null) {
+                //WRITING TO FIREBASE
+                Log.d("loc", "Location not null");
+                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference myRef = database.getReference("Locations");
+                String identifier = Settings.Secure.getString(getContentResolver(), "bluetooth_name");
+                Log.d("Trying", String.valueOf(location.getTime()));
+                Person x = new Person(identifier, location.getLatitude(), location.getLongitude(), location.getSpeed(), location.getTime()); //subject to change as for RDB as key identifier is the PERSON name
+
+                myRef.child(String.valueOf(x.getIdentifier())).setValue(x);
+
+                // Read from the database ---------------------------
+
+                locs = new Person[5];
+
+                myRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        int i=0;
+                        for (DataSnapshot ds: dataSnapshot.getChildren())
+                        {
+                            locs[i++] = ds.getValue(Person.class);
+                        }
+
+
+                        Log.d("halo", String.valueOf(locs[0].getTime()));
+                        mMap.addMarker(new MarkerOptions().position(new LatLng(
+                                locs[0].getLatitude(), locs[0].getLongitude()))).setTitle(
+                                locs[0].getSpeed()+
+                                        ": \nLongi="+locs[0].getLongitude()+
+                                        "\nLatitude="+locs[0].getLatitude()+
+                                        "\n Speed:"+ locs[0].getSpeed());
+
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(locs[0].getLatitude(), locs[0].getLongitude())));
+
+                Log.d("TS", "" +location.getLatitude()+ "   " + location.getLongitude());
+            }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {}
+
+                });
+            }
+
+
+            LocationServices.FusedLocationApi.requestLocationUpdates(
+                    googleApiClient, locationRequest, this);
+        }
+        catch (SecurityException s){
+            Log.d("TS","Not able to run location services...");
+        }
+    }
+
+
+
+
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+
     }
 
 

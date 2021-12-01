@@ -1,6 +1,24 @@
 package com.example.myapplication;
 
+import android.location.Location;
+
+
 public class Person {
+    public String identifier;
+    public double latitude;
+    public double longitude;
+    public double speed;
+    public Location loc;
+
+    public double time; //change to DateTime later
+
+    public double getTime() {
+        return time;
+    }
+
+    public void setTime(double time) {
+        this.time = time;
+    }
 
 
     public String getIdentifier() {
@@ -11,20 +29,6 @@ public class Person {
         this.identifier = identifier;
     }
 
-    public String identifier;
-    public double latitude;
-    public double longitude;
-    public double speed;
-
-    public double getTime() {
-        return time;
-    }
-
-    public void setTime(double time) {
-        this.time = time;
-    }
-
-    public double time; //change to DateTime later
 
     public double getLatitude() {
         return latitude;

@@ -1,5 +1,5 @@
 package com.example.myapplication;
-
+/*
 
 public class Location {
     public int getID() {
@@ -59,4 +59,4 @@ public class Location {
 
     }
     Location(){}
-}
+}*/
