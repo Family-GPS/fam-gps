@@ -1,3 +1,3 @@
 # family-gps
 # hcdk
-# dec 1
+# dec - 1
