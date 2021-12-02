@@ -2,14 +2,14 @@ package com.example.myapplication;
 
 import android.location.Location;
 
+import java.io.Serializable;
 
-public class Person {
+
+public class Person implements Serializable {
     public String identifier;
     public double latitude;
     public double longitude;
     public double speed;
-    public Location loc;
-
     public double time; //change to DateTime later
 
     public double getTime() {
