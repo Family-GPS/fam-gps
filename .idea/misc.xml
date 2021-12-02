@@ -3,23 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/aus-it/AndroidStudioProjects/MyApplication4/app/src/main/res/layout/activity_main.xml" value="0.1793478260869565" />
-<<<<<<< HEAD
-        <entry key="..\:/Users/aus-it/AndroidStudioProjects/MyApplication4/app/src/main/res/layout/marker_layout.xml" value="0.1703125" />
-=======
-<<<<<<< HEAD
-        <entry key="..\:/Users/aus-it/AndroidStudioProjects/MyApplication4/app/src/main/res/layout/marker_layout.xml" value="0.1703125" />
-=======
-<<<<<<< HEAD
-        <entry key="..\:/Users/aus-it/AndroidStudioProjects/MyApplication4/app/src/main/res/layout/marker_layout.xml" value="0.1703125" />
-=======
-<<<<<<< HEAD
-        <entry key="..\:/Users/aus-it/AndroidStudioProjects/MyApplication4/app/src/main/res/layout/marker_layout.xml" value="0.1703125" />
-=======
->>>>>>> be0e90ddbd09e47907816c231b8e704de5867275
->>>>>>> a2fa8fd6d7faf6546e865999922fa1719871d8ee
->>>>>>> a5d1810aedbc7f43df04106a5c6e658c237295c2
->>>>>>> b97e37c5f995a2f518433eb50a24892be6d64106
+        <entry key="..\:/Users/aus-it/AndroidStudioProjects/MyApplication4/app/src/main/res/layout/activity_main.xml" value="0.24010416666666667" />
+        <entry key="..\:/Users/aus-it/AndroidStudioProjects/MyApplication4/app/src/main/res/layout/location_list_item.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/aus-it/AndroidStudioProjects/MyApplication4/app/src/main/res/layout/marker_layout.xml" value="0.2595108695652174" />
+        <entry key="..\:/Users/aus-it/AndroidStudioProjects/MyApplication4/app/src/main/res/menu/menu.xml" value="0.1" />
       </map>
     </option>
   </component>
