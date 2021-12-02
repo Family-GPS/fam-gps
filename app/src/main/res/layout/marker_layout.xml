@@ -2,12 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+<<<<<<< HEAD
     android:background="#FDEBEB"
+=======
+<<<<<<< HEAD
+    android:background="#FDEBEB"
+=======
+    android:background="#FFFFF"
+>>>>>>> a2fa8fd6d7faf6546e865999922fa1719871d8ee
+>>>>>>> a5d1810aedbc7f43df04106a5c6e658c237295c2
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/longitudeTextView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:maxWidth="200px" />
 
 </LinearLayout>
