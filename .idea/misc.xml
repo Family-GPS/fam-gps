@@ -4,7 +4,14 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/aus-it/AndroidStudioProjects/MyApplication4/app/src/main/res/layout/activity_main.xml" value="0.1793478260869565" />
+<<<<<<< HEAD
         <entry key="..\:/Users/aus-it/AndroidStudioProjects/MyApplication4/app/src/main/res/layout/marker_layout.xml" value="0.1703125" />
+=======
+<<<<<<< HEAD
+        <entry key="..\:/Users/aus-it/AndroidStudioProjects/MyApplication4/app/src/main/res/layout/marker_layout.xml" value="0.1703125" />
+=======
+>>>>>>> be0e90ddbd09e47907816c231b8e704de5867275
+>>>>>>> a2fa8fd6d7faf6546e865999922fa1719871d8ee
       </map>
     </option>
   </component>
