@@ -1,11 +1,155 @@
 package com.example.myapplication;
 
+import androidx.fragment.app.FragmentActivity;
+
+import android.content.Context;
+import android.content.Intent;
+import android.location.Location;
+import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
+import android.view.View;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.example.myapplication.databinding.ActivityMapsBinding;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
+
+    private GoogleMap mMap;
+    private ActivityMapsBinding binding;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        binding = ActivityMapsBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+    }
+
+
+
+    //@SuppressWarnings("deprecated")
+    public void onR() {
+    }
+
+            //change the time of location updates
+
+
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        Log.d("MAP",String.valueOf(BackService.gfg));
+       /* if (!BackService.gfg.isEmpty()) {
+            Log.d("tag", "NOT EMPTYYYYYYYYYYYY");
+            for (Person l : BackService.gfg) {
+                mMap.addMarker(new MarkerOptions().position(new LatLng(
+                        l.getLatitude(), l.getLongitude()))).setTitle("Longi=" + l.getLongitude() + "\nLatitude=" + l.getLatitude());
+
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(l.getLatitude(), l.getLongitude())));
+            }
+        }*/
+
+
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("Locations");
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                ArrayList<Person> gfg = new ArrayList<Person>();
+
+                Log.d("tag", "enter Data SHCUCK");
+                for (DataSnapshot ds: dataSnapshot.getChildren())
+                {
+                    //mMap.addMarker(new MarkerOptions().position(new LatLng(
+                      //      ds.getValue()getLatitude(), l.getLongitude()))).setTitle("Longi=" + l.getLongitude() + "\nLatitude=" + l.getLatitude());
+                    gfg.add(ds.getValue(Person.class));
+                   // mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(l.getLatitude(), l.getLongitude())));
+                }
+
+                for (Person l: gfg)
+                {
+                    mMap.addMarker(new MarkerOptions().position(new LatLng(l.getLatitude(), l.getLongitude()))).setTitle(
+                            "Name: "+l.getIdentifier() +"\n Time:"+l.getTime()+
+                                    "\nLongi=" + l.getLongitude() + "\nLatitude=" + l.getLatitude());
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(l.getLatitude(), l.getLongitude())));
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+
+        });
+
+
+        mMap.setOnMapLongClickListener(this);
+
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+            @Override
+            public View getInfoWindow(Marker marker){
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                View v = getLayoutInflater().inflate(R.layout.marker_layout, null);
+                v.setLayoutParams(new RelativeLayout.LayoutParams(800, RelativeLayout.LayoutParams.WRAP_CONTENT));
+                TextView Longi = v.findViewById(R.id.longitudeTextView);
+                Longi.setText(marker.getTitle());
+                return v;
+            }
+        });
+
+    }
+
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+        Location NewLocationMarker = new Location("new");
+
+
+        mMap.addMarker(new MarkerOptions().position(latLng)).setTitle("Longi="+latLng.longitude + "\nLatitude="+latLng.latitude);
+    }
+}
+
+
+
+
+/***********package com.example.myapplication;
+
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 //import android.location.LocationRequest;
@@ -46,20 +190,10 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks, OnConnectionFailedListener, LocationListener, View.OnClickListener {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener {
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
-    private GoogleApiClient googleApiClient;//to turn requests on and off
-    public static final int UPDATE_INTERVAL = 5000; // 5 secs
-    public static final int FASTEST_UPDATE_INTERVAL = 5000;
-    private LocationRequest locationRequest;
 
-    private LocationManager locationManager;
-    ArrayList<Person> gfg = new ArrayList<Person>();
-  //  Person[] persons;
-
-    Person[] locs;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,52 +205,69 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        //----------------start location services--
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-
-        googleApiClient.connect();
-
-        locationRequest = LocationRequest.create()
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setInterval(UPDATE_INTERVAL)
-                .setFastestInterval(FASTEST_UPDATE_INTERVAL);
+        //
 
 
+       /*Bundle extras = getIntent().getExtras();
 
-        Log.d("tag", "oncreate is called");
+        ArrayList<Person> updates = new ArrayList<Person>();
 
-        //WRITING TO FIREBASE ------------
+        if (extras != null){
+            updates = (ArrayList<Person>) getIntent().getSerializableExtra("all");
+            Draw(updates);
+        }*/
 
+
+/**
     }
 
 
 
         @Override
         public void onMapReady(GoogleMap googleMap) {
-            mMap = googleMap;
-            mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+        /*if (BackService.gfg != null) {
 
+            for (Person l : BackService.gfg) {
+                mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(
+                                        l.getLatitude(),
+                                        l.getLongitude()
+                                )
+                        )
+                )
+                        .setTitle("Name= " + l.getIdentifier() + "\n Longi=" + l.getLongitude() + "\n Latitude=" + l.getLatitude() +
+                                "\n Time=" + l.getTime()
+                        );
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(new
+                                LatLng(l.getLatitude(), l.getLongitude()
+                        )
+                        )
+                );
+            }
+        }*/ /***
+
+            mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
-                public View getInfoWindow(Marker marker){
+                public View getInfoWindow(Marker marker) {
                     return null;
                 }
 
                 @Override
                 public View getInfoContents(Marker marker) {
-                    View v = getLayoutInflater().inflate(R.layout.marker_layout, null);
-                    v.setLayoutParams(new RelativeLayout.LayoutParams(800, RelativeLayout.LayoutParams.WRAP_CONTENT));
+                    View v = getLayoutInflater()
+                            .inflate(R.layout.marker_layout,
+                                    null);
+                    v.setLayoutParams(new RelativeLayout.LayoutParams(800,
+                            RelativeLayout.LayoutParams.WRAP_CONTENT)
+                    );
                     TextView Longi = v.findViewById(R.id.longitudeTextView);
-                    Longi.setText(marker.getTitle());
+                    Longi.setText(marker.getTitle()
+                    );
                     return v;
                 }
             });
-
         }
+
 
     @Override
     public void onClick(View view) {
@@ -125,76 +276,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
-    @Override
-    public void onLocationChanged(Location location) {
-
-        new CountDownTimer(30000, 1000) {
-
-            public void onTick(long millisUntilFinished) {
-
-            }
-
-            public void onFinish() {
-
-                Log.d("tag", "onLocation changed!!!!!");
-                if (googleApiClient != null)
-                    if (googleApiClient.isConnected() || googleApiClient.isConnecting()){
-                        googleApiClient.disconnect();
-                        googleApiClient.connect();
-                    } else if (!googleApiClient.isConnected()){
-                        googleApiClient.connect();
-                    }
-
-            }
-        }.start();
 
 
-    }
-
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 123)
-            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                onConnected(new Bundle());
-    }
 
 
     @Override
     protected void onStart() { //called before on resume – corresponds to onStop
         super.onStart();
-        googleApiClient.connect(); //connect to google play services not GPS!
+
         //in a separate thread
         //onConnected is then called
     }
     @Override
     protected void onPause() {
-        if (googleApiClient.isConnected()) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(
-                    googleApiClient, this);
-        }
+
         super.onPause();
     }
 
     @Override
     protected void onStop() {
-        googleApiClient.disconnect();
+
         super.onStop();
     }
 
-    @Override
-    public void onConnectionFailed(
-            ConnectionResult connectionResult) {
-        // Put code to run if connection fails here
-        // ex. print out an error message !
-    }
 
 
-    @Override
-    //@SuppressWarnings("deprecated")
-    public void onConnected(Bundle dataBundle)
-    {
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+/* if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},123);
 
         try {
@@ -254,39 +361,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     public void onCancelled(DatabaseError databaseError) {}
 
                 });
-            }
+                */
+
 
 
             //remove location updates so that it resets
-            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
-
-            //change the time of location updates
-            locationRequest = LocationRequest.create()
-                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                    .setInterval(5000)
-                    .setFastestInterval(5000);
-
-            //restart location updates with the new interval
-            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
-
-        }
-        catch (SecurityException s){
-            Log.d("rawan","Not able to run location services...");
-        }
-    }
 
 
 
-    @Override
-    public void onConnectionSuspended(int i) {
 
-    }
+   // }
 
 
-    }
-
-
-
+/*----------------*/
 
 
 
