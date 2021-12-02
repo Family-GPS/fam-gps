@@ -4,7 +4,10 @@ import android.Manifest;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+<<<<<<< HEAD
 import android.content.pm.PackageManager;
+=======
+>>>>>>> be0e90ddbd09e47907816c231b8e704de5867275
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -12,10 +15,14 @@ import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
+<<<<<<< HEAD
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
+=======
+import androidx.annotation.NonNull;
+>>>>>>> be0e90ddbd09e47907816c231b8e704de5867275
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -26,29 +33,46 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+<<<<<<< HEAD
 
+=======
+>>>>>>> be0e90ddbd09e47907816c231b8e704de5867275
 import java.util.ArrayList;
 
 public class BackService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private GoogleApiClient googleApiClient;//to turn requests on and off
+<<<<<<< HEAD
     public static final int UPDATE_INTERVAL = 1000; // 5 secs
     public static final int FASTEST_UPDATE_INTERVAL = 1000;
+=======
+    public static final int UPDATE_INTERVAL = 5000; // 5 secs
+    public static final int FASTEST_UPDATE_INTERVAL = 5000;
+>>>>>>> be0e90ddbd09e47907816c231b8e704de5867275
     private LocationRequest locationRequest;
     private LocationManager locationManager;
     public static ArrayList<Person> gfg = new ArrayList<Person>();
 
     @Override
     public void onCreate() {
+<<<<<<< HEAD
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+=======
+        locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+>>>>>>> be0e90ddbd09e47907816c231b8e704de5867275
         //----------------start location services--
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
+<<<<<<< HEAD
         googleApiClient.connect();
 
+=======
+
+
+>>>>>>> be0e90ddbd09e47907816c231b8e704de5867275
         locationRequest = LocationRequest.create()
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setInterval(UPDATE_INTERVAL)
@@ -63,6 +87,7 @@ public class BackService extends Service implements GoogleApiClient.ConnectionCa
         return null;
     }
 
+<<<<<<< HEAD
 
     protected void createLocationRequest() {
         //remove location updates so that it resets
@@ -89,15 +114,22 @@ public class BackService extends Service implements GoogleApiClient.ConnectionCa
     }
 
 
+=======
+>>>>>>> be0e90ddbd09e47907816c231b8e704de5867275
     @Override
     //@SuppressWarnings("deprecated")
     public void onConnected(Bundle dataBundle)
     {
+<<<<<<< HEAD
         Log.d("tag", "onconnect is called");
 
         try {
 
             createLocationRequest();
+=======
+
+        try {
+>>>>>>> be0e90ddbd09e47907816c231b8e704de5867275
             Location location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
             if (location != null) {
                 FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -108,12 +140,54 @@ public class BackService extends Service implements GoogleApiClient.ConnectionCa
 
                 myRef.child(String.valueOf(x.getIdentifier())).setValue(x);    //write to database
 
+<<<<<<< HEAD
                 Log.d("tag", String.valueOf(x));
                 // Read from the database ---------------------------
 
 
             }
 
+=======
+                // Read from the database ---------------------------
+
+
+                myRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+
+                        new CountDownTimer(30000, 30000) {
+
+                            public void onTick(long millisUntilFinished) {
+
+                            }
+
+                            public void onFinish() {
+                                for (DataSnapshot ds: dataSnapshot.getChildren())
+                                {
+                                    gfg.add(ds.getValue(Person.class));
+                                }
+
+
+
+
+                            }
+                        }.start();
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {}
+
+                });
+            }
+
+
+            //remove location updates so that it resets
+            LocationServices.FusedLocationApi.removeLocationUpdates(googleApiClient, this);
+
+>>>>>>> be0e90ddbd09e47907816c231b8e704de5867275
             //change the time of location updates
             locationRequest = LocationRequest.create()
                     .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
@@ -144,8 +218,20 @@ public class BackService extends Service implements GoogleApiClient.ConnectionCa
     @Override
     public void onLocationChanged(Location location) {
 
+<<<<<<< HEAD
                 Log.d("tag", "onLocation changed!!!!!");
 
+=======
+        new CountDownTimer(30000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            public void onFinish() {
+
+                Log.d("tag", "onLocation changed!!!!!");
+>>>>>>> be0e90ddbd09e47907816c231b8e704de5867275
                 if (googleApiClient != null)
                     if (googleApiClient.isConnected() || googleApiClient.isConnecting()){
                         googleApiClient.disconnect();
@@ -154,6 +240,11 @@ public class BackService extends Service implements GoogleApiClient.ConnectionCa
                         googleApiClient.connect();
                     }
 
+<<<<<<< HEAD
+=======
+            }
+        }.start();
+>>>>>>> be0e90ddbd09e47907816c231b8e704de5867275
 
 
     }
@@ -169,9 +260,14 @@ public class BackService extends Service implements GoogleApiClient.ConnectionCa
 
     @Override
     public void onDestroy() {
+<<<<<<< HEAD
         googleApiClient.disconnect();
         super.onDestroy();
 
+=======
+        super.onDestroy();
+        googleApiClient.disconnect();
+>>>>>>> be0e90ddbd09e47907816c231b8e704de5867275
 
     }
 

@@ -206,6 +206,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         //
+<<<<<<< HEAD
 
 
        /*Bundle extras = getIntent().getExtras();
@@ -216,6 +217,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             updates = (ArrayList<Person>) getIntent().getSerializableExtra("all");
             Draw(updates);
         }*/
+=======
+
+
+       /*Bundle extras = getIntent().getExtras();
+
+        ArrayList<Person> updates = new ArrayList<Person>();
+
+        if (extras != null){
+            updates = (ArrayList<Person>) getIntent().getSerializableExtra("all");
+            Draw(updates);
+        }*/
+
+>>>>>>> be0e90ddbd09e47907816c231b8e704de5867275
 
 
 /**
@@ -244,7 +258,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         )
                 );
             }
+<<<<<<< HEAD
         }*/ /***
+=======
+        }*/
+>>>>>>> be0e90ddbd09e47907816c231b8e704de5867275
 
             mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
@@ -276,9 +294,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
+<<<<<<< HEAD
+
+
+=======
 
 
 
+    public void Draw(ArrayList<Person> all){
+        for (Person p: all)
+        {
+            Log.d("hello", String.valueOf(p.getIdentifier()));
+            mMap.addMarker(new MarkerOptions().position(new LatLng(
+                    p.getLatitude(), p.getLongitude()))).setTitle(
+                    p.getSpeed()+
+                            ":\n Name="+p.getIdentifier()+
+                            ": \nLongi="+ p.getLongitude()+
+                            "\nLatitude="+ p.getLatitude()+
+                            "\n Speed:"+ p.getSpeed());
+
+            //mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(p.getLatitude(), p.getLongitude())));
+
+        }
+
+    }
+>>>>>>> be0e90ddbd09e47907816c231b8e704de5867275
 
     @Override
     protected void onStart() { //called before on resume – corresponds to onStop
@@ -295,12 +335,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     protected void onStop() {
+<<<<<<< HEAD
 
         super.onStop();
     }
 
 
 
+=======
+
+        super.onStop();
+    }
+
+
+
+>>>>>>> be0e90ddbd09e47907816c231b8e704de5867275
 /* if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},123);
 
